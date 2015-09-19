@@ -2,9 +2,8 @@
  * Created by Jeff on 9/19/15.
  */
 
-var express = require('express');
+var express = require('express')();
 var request = require('request');
-var router = express.router();
 
 var FLIGHTS_BASE = "https://api.sandbox.amadeus.com/v1.2/flights/";
 var AIRPORTS_BASE = "https://api.sandbox.amadeus.com/v1.2/airports/";
@@ -128,17 +127,15 @@ function airportAutoComplete(text) {
     });
 }
 
-router.get('/airportAutoComplete', function(request, response, next) {
-    airportAutoComplete(request.params.text).then(function (body) {
-        response.send(body);
-    }, function (reason) {
-        response.send(reason);
-    });
-});
+function setupEndpoints() {
+
+}
+
 
 module.exports = {
     "nearbyAirport": nearbyAirport,
     "inspirationSearch": inspirationSearch,
     "extensiveSearch": extensiveSearch,
-    "lowFareSearch": lowFareSearch
+    "lowFareSearch": lowFareSearch,
+    "autoComplete": airportAutoComplete
 };

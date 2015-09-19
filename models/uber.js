@@ -114,24 +114,22 @@ function estimateTimes(startCoord)
 }
 
 router.get("/uberXtime", function(request, response, next) {
-    //var params = request.headers.startcoord;
-    //params = JSON.parse(params);
+    var params = request.params.startcoord;
+    params = JSON.parse(params);
 
     // Hard code to test
-    var params = {}
-    params.startCoord = {
-        "latitude": -71.101857,
-        "longitude": 42.36508
-    };
+    //var params = {}
+    //params.startCoord = {
+    //    "longitude": -71.101857,
+    //    "latitude": 42.36508
+    //};
 
     estimateTimes(params.startCoord).then(function (estimate) {
-        response.statusCode(200).send({
+        response.send({
             "estimate": estimate,
             "type": "uberX",
         });
     })
-
-    next();
 });
 
 module.exports = router;

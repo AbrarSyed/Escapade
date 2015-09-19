@@ -1,5 +1,4 @@
-var config = require("../config.json");
-var request = require('request');
+var request = require('requests');
 
 // constants
 var API_KEY = require("../config.json").amadeus.key;
@@ -48,4 +47,14 @@ function findHotels(airportCode, checkInDate, checkOutDate, maxRate, amenities)
             }
         });
     })
+}
+
+module.exports = {
+    findHotels: function(airportCode, checkInDate, checkOutDate, maxRate, amenities) {
+        findHotels(airportCode, checkInDate, checkOutDate, maxRate, amenities).then(function(result) {
+            return result;
+        }, function(err) {
+            throw err;
+        });
+    }
 }

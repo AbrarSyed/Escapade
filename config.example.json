@@ -1,0 +1,6 @@
+{
+    "parse": {
+        "email": "someEmail@gmail.com",
+        "pass": "password"
+    }
+}

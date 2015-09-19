@@ -10,6 +10,7 @@ var options = {
     headers: {
         "Authorization": "Token " + config['uber']['server_token'],
     },
+    method: "GET"
 }
 
 function makeOptions(url)

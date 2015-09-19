@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 var flights = require('../models/amadeusFlights.js');
 
-router.get('/flights/airportAutoComplete', function(request, response, next) {
+router.get('/airportAutoComplete', function(request, response, next) {
     flights.autoComplete(request.query.text).then(function (body) {
         response.send(body);
     }, function (reason) {

@@ -49,12 +49,38 @@ function findHotels(airportCode, checkInDate, checkOutDate, maxRate, amenities)
     })
 }
 
+function getHotel(hotelCode)
+{
+    return new Promise(function (resolve, reject) {
+        var options = {
+            url: BASE_URL+hotelCode,
+            method: "GET",
+            qs: {
+                apikey: API_KEY,
+                location: airportCode,
+                check_in: checkInDate,
+                check_out: checkOutDate,
+                lang: "EN",
+                currency: "USD"
+            },
+            arrayFormat: "repeat"
+        }
+
+        request(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                resolve(body);
+            } else {
+                reject(error);
+            }
+        });
+    })
+}
+
 module.exports = {
     findHotels: function(airportCode, checkInDate, checkOutDate, maxRate, amenities) {
-        findHotels(airportCode, checkInDate, checkOutDate, maxRate, amenities).then(function(result) {
-            return result;
-        }, function(err) {
-            throw err;
-        });
-    }
+        return findHotels(airportCode, checkInDate, checkOutDate, maxRate, amenities);
+    },
+    getHotel: function(hotelCode) {
+        return findHotels(hotelCode);
+    },
 }

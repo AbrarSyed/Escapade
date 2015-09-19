@@ -1,8 +1,10 @@
 /**
  * Created by Jeff on 9/19/15.
  */
+var express = require('express');
 var request = require('request');
 var config = require('../config.json');
+var router = express.Router();
 
 var options = {
     headers: {
@@ -10,6 +12,26 @@ var options = {
     },
 }
 var endpoint = 'https://api.uber.com/';
+
+function callUberAPI(url)
+{
+    if (!url) {
+        return new Promise(function (resolve, reject) {
+            reject(new Error("invalid endpoint"));
+        });
+    } else {
+        return new Promise(function (resolve, reject) {
+            options['url'] = url;
+            request(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    resolve(body);
+                } else {
+                    reject(error);
+                }
+            });
+        })
+    }
+}
 
 function estimatePrice(startCoord, endCoord, callback)
 {
@@ -22,10 +44,9 @@ function estimatePrice(startCoord, endCoord, callback)
 
     var url = endpoint + version + "/" + type + "?" + queryString;
 
-    options['url'] = url;
-    request(options, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var ret = JSON.parse(body);
+    return new Promise(function (resolve, reject) {
+        callUberAPI(url).then(function (data) {
+            var ret = JSON.parse(data);
             var low = 0.0;
             var high = 0.0;
             var num = 0;
@@ -44,12 +65,12 @@ function estimatePrice(startCoord, endCoord, callback)
                 }
 
                 // pass that price back
-                callback((low + high)/num); // Calculate the average price over all uberX's with no surge and return
+                resolve((low + high)/num); // Calculate the average price over all uberX's with no surge and return
             }
-
-        } else {
-            callback(error);
-        }
+        }, function (reason) {
+            reject(reason);
+        });
     });
-
 }
+
+module.exports.estimatePrice = estimatePrice;

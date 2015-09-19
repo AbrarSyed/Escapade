@@ -107,6 +107,35 @@ function nearbyAirport(coordinate)
     });
 }
 
+function airportAutoComplete(text) {
+    var option = {
+        "url": AIRPORTS_BASE + "autocomplete",
+        "qs": {
+            "term": text,
+            "apikey": API_KEY
+        },
+        "method": "GET"
+    };
+
+    return new Promise(function (resolve, reject) {
+        request(option, function(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                resolve(body);
+            } else {
+                reject(error);
+            }
+        });
+    });
+}
+
+router.get('/airportAutoComplete', function(request, response, next) {
+    airportAutoComplete(request.params.text).then(function (body) {
+        response.send(body);
+    }, function (reason) {
+        response.send(reason);
+    });
+});
+
 module.exports = {
     "nearbyAirport": nearbyAirport,
     "inspirationSearch": inspirationSearch,

@@ -7,5 +7,8 @@
         "client_id": "id",
         "server_token": "token",
         "client_secret": "secret"
+    },
+    "amadeus": {
+        "key": "######"
     }
 }

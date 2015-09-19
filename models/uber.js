@@ -121,37 +121,9 @@ function estimateTimes(startCoord)
  * @returns { "estimate": int (seconds), "type": "uberX" }
  */
 
-router.get("/uberXtime", function(request, response, next) {
-    var params = request.params;
-    params = JSON.parse(params);
 
-    // Hard code to test
-    //var params = {}
-    //params.startCoord = {
-    //    "longitude": -71.101857,
-    //    "latitude": 42.36508
-    //};
 
-    estimateTimes(params.startCoord).then(function (estimate) {
-        response.send({
-            "estimate": estimate,
-            "type": "uberX",
-        });
-    })
-});
-
-router.get("/uberXPrice", function(request, response, next) {
-    var params = request.params;
-    params = JSON.parse(params);
-
-    estimatePrice(params.startCoord, params.endCoord).then(function (data) {
-        response.send({
-            "price": data,
-            "type": "uberX"
-        });
-    }, function(reason) {
-        response.statusCode(500);
-    });
-});
-
-module.exports = router;
+module.exports = {
+    "estimateTimes": estimateTimes,
+    "estimatePrices": estimatePrice
+};

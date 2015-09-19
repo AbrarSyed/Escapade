@@ -7,8 +7,8 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var uber = require('./models/uber');
-var flights = require('./models/amadeusFlights');
+var uber = require('./routes/uberIndex');
+var flights = require('./routes/flightsIndex');
 
 var app = express();
 
@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/uber', uber);
+app.use('/flights', flights);
 
 
 // catch 404 and forward to error handler
@@ -60,14 +61,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
-// Because I'm bad at coding
-app.get('/flights/airportAutoComplete', function(request, response, next) {
-  flights.autoComplete(request.query.text).then(function (body) {
-    response.send(body);
-  }, function (reason) {
-    response.send(reason);
-  });
-});
+
 
 
 module.exports = app;

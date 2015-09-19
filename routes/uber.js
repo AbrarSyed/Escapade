@@ -33,7 +33,7 @@ function callUberAPI(url)
     }
 }
 
-function estimatePrice(startCoord, endCoord, callback)
+function estimatePrice(startCoord, endCoord)
 {
     var version = "v1";
     var type = "estimates/price";
@@ -50,7 +50,7 @@ function estimatePrice(startCoord, endCoord, callback)
             var low = 0.0;
             var high = 0.0;
             var num = 0;
-            var filter = 'uberx';
+            var filter = "uberx";
 
             // find the average price of all uberx's
             for (var idx = 0; idx < ret['prices'].length; idx++) {
@@ -72,5 +72,47 @@ function estimatePrice(startCoord, endCoord, callback)
         });
     });
 }
+
+function estimateTimes(startCoord)
+{
+    var version = "v1";
+    var type = "estimates/time";
+    var queryString = "start_latitude=" + startCoord['latitude'] + "&" +
+        "start_longitude=" + startCoord['longitude'];
+
+    var url = endpoint + version + "/" + type + "?" + queryString;
+
+    return new Promise(function (resolve, reject) {
+        callUberAPI(url).then(function(data) {
+            var ret = JSON.parse(data);
+            var estimate = 0;
+            var filter = "uberx";
+
+            for (var i = 0; i < ret.times.length; i++) {
+                if (ret.times[i].display_name.toLowerCase() === filter) {
+                    estimate = ret.times[i].estimate;
+                    break;
+                }
+            }
+
+            resolve(estimate);
+        }, function(reason) {
+            reject(reason);
+        });
+    })
+}
+
+router.get("/escapade/uberXtime", function(request, response, next) {
+    var params = request.params;
+
+    estimateTimes(params.startCoord).then(function (estimate) {
+        response.statusCode(200).send({
+            "estimate": estimate,
+            "type": "uberX",
+        });
+    })
+
+    next();
+});
 
 module.exports.estimatePrice = estimatePrice;

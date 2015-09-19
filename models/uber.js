@@ -140,4 +140,18 @@ router.get("/uberXtime", function(request, response, next) {
     })
 });
 
+router.get("/uberXPrice", function(request, response, next) {
+    var params = request.params;
+    params = JSON.parse(params);
+
+    estimatePrice(params.startCoord, params.endCoord).then(function (data) {
+        response.send({
+            "price": data,
+            "type": "uberX"
+        });
+    }, function(reason) {
+        response.statusCode(500);
+    });
+});
+
 module.exports = router;

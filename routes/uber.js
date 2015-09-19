@@ -11,17 +11,27 @@ var options = {
         "Authorization": "Token " + config['uber']['server_token'],
     },
 }
+
+function makeOptions(url)
+{
+    return {
+        "url": url,
+        "headers": {
+            "Authorization": "Token " + config['uber']['server_token'],
+        }
+    };
+}
 var endpoint = 'https://api.uber.com/';
 
 function callUberAPI(url)
 {
+    var options = makeOptions(url);
     if (!url) {
         return new Promise(function (resolve, reject) {
             reject(new Error("invalid endpoint"));
         });
     } else {
         return new Promise(function (resolve, reject) {
-            options['url'] = url;
             request(options, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     resolve(body);

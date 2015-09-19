@@ -113,8 +113,16 @@ function estimateTimes(startCoord)
     })
 }
 
+/**
+ * Hits the Uber Time estimate endpoint
+ * @param startCoord dict for the longitude and latitude of the place to search
+ * @param startCoord.longitude {float} Longitude of the starting Coordinate
+ * @param startCoord.latitude {float} latitude of the starting coordinate
+ * @returns { "estimate": int (seconds), "type": "uberX" }
+ */
+
 router.get("/uberXtime", function(request, response, next) {
-    var params = request.params.startcoord;
+    var params = request.params;
     params = JSON.parse(params);
 
     // Hard code to test

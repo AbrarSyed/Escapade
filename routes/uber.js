@@ -113,8 +113,8 @@ function estimateTimes(startCoord)
     })
 }
 
-router.get("/escapade/uberXtime", function(request, response, next) {
-    var params = request.params;
+router.get("/uberXtime", function(request, response, next) {
+    var params = request.body;
 
     estimateTimes(params.startCoord).then(function (estimate) {
         response.statusCode(200).send({

@@ -1,4 +1,4 @@
-var request = require('requests');
+var request = require('request');
 
 // constants
 var API_KEY = require("../config.json").amadeus.key;

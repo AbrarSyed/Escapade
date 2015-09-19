@@ -14,7 +14,7 @@
     "lodash": "^3.10.1",
     "morgan": "~1.6.1",
     "parse": "^1.6.3",
-    "requests": "^0.1.7",
+    "request": "^2.62.0",
     "serve-favicon": "~2.3.0"
   }
 }

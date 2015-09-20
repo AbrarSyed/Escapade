@@ -18,4 +18,12 @@ router.get('/airportAutoComplete', function(request, response, next) {
     });
 });
 
+router.get('/nearestAirport', function(request, response, next) {
+   flights.nearbyAirport({ "longitude": request.query.longitude, "latitude": request.query.latitude }).then(function (data) {
+       response.json(data);
+   }, function(reason) {
+       response.send(reason);
+   });
+});
+
 module.exports = router;

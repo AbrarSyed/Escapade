@@ -1,13 +1,11 @@
-/**
- * Created by Jeff on 9/19/15.
- */
-
-var express = require('express');
 var request = require('request');
 
-var FLIGHTS_BASE = "https://api.sandbox.amadeus.com/v1.2/flights/";
-var AIRPORTS_BASE = "https://api.sandbox.amadeus.com/v1.2/airports/";
+var BASE_URL = "https://api.sandbox.amadeus.com/v1.2/";
+var FLIGHTS_BASE = BASE_URL + "flights/";
+var AIRPORTS_BASE = BASE_URL + "airports/";
 var API_KEY = require('../config.json').amadeus.key;
+
+var airportGeoCache = {};
 
 module.exports = {
     "nearbyAirport": function (coordinate) {
@@ -27,6 +25,40 @@ module.exports = {
                     resolve(JSON.parse(body));
                 } else {
                     reject(error);
+                }
+            });
+        });
+    },
+    "airportInfo": function (code) {
+
+        if (airportGeoCache[code])
+        {
+            return Promise.resolve(airportGeoCache[code]);
+        }
+
+        var option = {
+            "url": BASE_URL + "location/"+code,
+            "qs": {
+                "apikey": API_KEY
+            },
+            "method": "GET"
+        };
+
+        return new Promise(function (resolve, reject) {
+            request(option, function (error, response, json) {
+                if (!error && response.statusCode == 200) {
+                    var body = JSON.parse(body)
+                    if (body.Info)
+                    {
+                        reject(new Error(body.Info));
+                    }
+                    else
+                    {
+                        airportGeoCache[code] = body.airports[0];
+                        resolve(body.airports[0]);
+                    }
+                } else {
+                    reject(new Error(error));
                 }
             });
         });

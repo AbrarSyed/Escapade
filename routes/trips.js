@@ -5,6 +5,7 @@ var _ = require('lodash');
 var aHotels = require('../models/amadeusHotels');
 var aFlights = require('../models/amadeusFlights');
 var uber = require('../models/uber');
+var airlines = require('../airlines.json');
 
 /* GET users listing. */
 router.post('/buildTripList', function(req, res) {
@@ -57,6 +58,7 @@ router.post('/buildTripList', function(req, res) {
         out = _.map(out, function(flight) {
             flight.origin = flightsData.origin;
             flight.price = parseFloat(flight.price);
+            flight.airlineName = airlines[flight.airline];
             return flight;
         });
 

@@ -2,14 +2,14 @@
  * Created by Jeff on 9/19/15.
  */
 
-var express = require('express')();
+var express = require('express');
 var request = require('request');
 
 var FLIGHTS_BASE = "https://api.sandbox.amadeus.com/v1.2/flights/";
 var AIRPORTS_BASE = "https://api.sandbox.amadeus.com/v1.2/airports/";
 var API_KEY = require('../config.json').amadeus.key;
 
-function inspirationSearch(budget, origin, leavingDate)
+function inspirationSearch(budget, origin, leavingDate, duration)
 {
     var option = {
         "url": FLIGHTS_BASE + "inspiration-search",
@@ -17,7 +17,8 @@ function inspirationSearch(budget, origin, leavingDate)
             "origin": origin,
             "departure_date": leavingDate,
             "max_price": budget,
-            "apikey": API_KEY
+            "apikey": API_KEY,
+            "duration": duration,
         },
         "method": "GET",
     };
@@ -33,7 +34,7 @@ function inspirationSearch(budget, origin, leavingDate)
     });
 }
 
-function extensiveSearch(budget, origin, destination, leavingDate)
+function extensiveSearch(budget, origin, destination, leavingDate, duration)
 {
     var option = {
         "url": FLIGHTS_BASE + "extensive-search",
@@ -42,7 +43,8 @@ function extensiveSearch(budget, origin, destination, leavingDate)
             "departure_date": leavingDate,
             "max_price": budget,
             "apikey": API_KEY,
-            "destination": destination
+            "destination": destination,
+            "duration": duration,
         },
         "method": "GET",
     };

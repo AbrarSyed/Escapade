@@ -158,7 +158,7 @@ router.post('/buildTripList', function(req, res) {
     });
 
     promise = promise.then(function(trips) {
-        trips = _.union(trips);
+        trips = _.flatten(trips);
         console.log("TRIPS  ------------ ");
         console.log(JSON.stringify(trips));
         console.log("------------");

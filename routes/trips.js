@@ -26,8 +26,8 @@ router.post('/buildTripList', function(req, res) {
 
     var budget = body.budget;
 
-    body.departStartDate = departDate.split("--")[0];
-    body.departEndDate = departDate.split("--")[1];
+    body.departStartDate = body.departDate.split("--")[0];
+    body.departEndDate = body.departDate.split("--")[1];
 
     var promise;
 
@@ -38,7 +38,7 @@ router.post('/buildTripList', function(req, res) {
 
         var duration = moment(body.returnDate).diff(moment(body.departEndDate), "days") + "--" + moment(body.returnDate).diff(moment(body.departStartDate), "days");
 
-        promise = aFlights.inspirationSearch(budget, body.departLoc, departDate, duration);
+        promise = aFlights.inspirationSearch(budget, body.departLoc, body.departDate, duration);
     }
     else
     {
@@ -46,7 +46,7 @@ router.post('/buildTripList', function(req, res) {
 
         var duration = moment(body.returnDate).diff(moment(body.departEndDate), "days") + "--" + moment(body.returnDate).diff(moment(body.departStartDate), "days");
 
-        promise = aFlights.extensiveSearch(budget, body.destLoc, body.departLoc, departDate, duration);
+        promise = aFlights.extensiveSearch(budget, body.destLoc, body.departLoc, body.departDate, duration);
     }
 
     promise = promise.then(function(flightsData) {
@@ -150,30 +150,15 @@ router.post('/buildTripList', function(req, res) {
             return hotelPromise;
         });
 
-        promises[0].catch(function(err) {
-           console.log("WERRRORRRR -> "+err);
-        });
-
-        promises[1].then(function(thing) {
-            console.log("HUHUH!!!")
-        }, function(err) {
-            console.log("WHAT!?!?! -> "+err);
-            throw new Error(err);
-        });
-
         // add flights and hotels to make
-        return Promise.all(promises).then(function(thing) {
-            console.log("HUHUH!!!")
-        }, function(err) {
-            console.log("WHAT!?!?! -> "+err);
-            throw new Error(err);
-        });
+        return Promise.all(promises);
     }, function(err) {
         console.log("WHAT!?!?! -> "+err);
         throw new Error(err);
     });
 
     promise = promise.then(function(trips) {
+        trips = _.union(trips);
         console.log("TRIPS  ------------ ");
         console.log(JSON.stringify(trips));
         console.log("------------");

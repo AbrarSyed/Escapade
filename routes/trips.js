@@ -132,7 +132,17 @@ router.post('/buildTripList', function(req, res) {
                         hotel: hotel,
                         price: flight.price + parseFloat(hotel.total_price.amount) + hotel.uberPrice
                     };
-                    console.log("########  adding -> " + JSON.stringify(out));
+
+                    // find the hotels ratings
+                    out.hotel.rating = 0;
+                    _.forEach(hotel.awards, function(award) {
+                        if (isNaN(award.rating))
+                        {
+                            out.hotel.rating = _.max(out.hotel.rating, parseInt(award.rating));
+                        }
+                    });
+
+                    //console.log("########  adding -> " + JSON.stringify(out));
                     return out;
                 });
             }, function(err) {

@@ -1,8 +1,16 @@
 var request = require('request');
 
 // constants
-var API_KEY = require("../config.json").amadeus.key;
 var BASE_URL = "https://api.sandbox.amadeus.com/v1.2/hotels/";
+
+var API_KEYS = require('../config.json').amadeus.keys;
+var keyIndex = 0;
+function getApiKey()
+{
+    var out = API_KEYS[keyIndex];
+    keyIndex = (keyIndex+1) % API_KEYS.length; // bump key
+    return out;
+}
 
 /**
  * Hits the Amaadeus hotel API
@@ -20,7 +28,7 @@ function findHotels(airportCode, checkInDate, checkOutDate, maxRate, amenities)
             url: BASE_URL+"search-airport",
             method: "GET",
             qs: {
-                apikey: API_KEY,
+                apikey: getApiKey(),
                 location: airportCode,
                 check_in: checkInDate,
                 check_out: checkOutDate,
@@ -41,8 +49,11 @@ function findHotels(airportCode, checkInDate, checkOutDate, maxRate, amenities)
 
         request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                resolve(body);
+                resolve(JSON.parse(body).results);
             } else {
+                console.log("ERROR -> "+error);
+                console.log("status-code -> "+response.statusCode);
+                console.log("data -> "+body);
                 reject(error);
             }
         });
@@ -56,7 +67,7 @@ function getHotel(hotelCode)
             url: BASE_URL+hotelCode,
             method: "GET",
             qs: {
-                apikey: API_KEY,
+                apikey: getApiKey(),
                 location: airportCode,
                 check_in: checkInDate,
                 check_out: checkOutDate,
@@ -68,7 +79,7 @@ function getHotel(hotelCode)
 
         request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                resolve(body);
+                resolve(JSON.parse(body));
             } else {
                 reject(error);
             }

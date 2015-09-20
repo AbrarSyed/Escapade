@@ -9,6 +9,8 @@
         "client_secret": "secret"
     },
     "amadeus": {
-        "key": "######"
+        "keys": [
+            "######"
+        ]
     }
 }

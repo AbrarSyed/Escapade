@@ -3,7 +3,15 @@ var request = require('request');
 var BASE_URL = "https://api.sandbox.amadeus.com/v1.2/";
 var FLIGHTS_BASE = BASE_URL + "flights/";
 var AIRPORTS_BASE = BASE_URL + "airports/";
-var API_KEY = require('../config.json').amadeus.key;
+var API_KEYS = require('../config.json').amadeus.keys;
+
+var keyIndex = 0;
+function getApiKey()
+{
+    var out = API_KEYS[keyIndex];
+    keyIndex = (keyIndex+1) % API_KEYS.length; // bump key
+    return out;
+}
 
 var airportGeoCache = {};
 
@@ -14,7 +22,7 @@ module.exports = {
             "qs": {
                 "latitude": coordinate.latitude,
                 "longitude": coordinate.longitude,
-                "apikey": API_KEY
+                "apikey": getApiKey()
             },
             "method": "GET",
         };
@@ -33,13 +41,14 @@ module.exports = {
 
         if (airportGeoCache[code])
         {
+            console.log("Cahce HIT!");
             return Promise.resolve(airportGeoCache[code]);
         }
 
         var option = {
             "url": BASE_URL + "location/"+code,
             "qs": {
-                "apikey": API_KEY
+                "apikey": getApiKey()
             },
             "method": "GET"
         };
@@ -47,7 +56,7 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             request(option, function (error, response, json) {
                 if (!error && response.statusCode == 200) {
-                    var body = JSON.parse(body)
+                    var body = JSON.parse(json);
                     if (body.Info)
                     {
                         reject(new Error(body.Info));
@@ -58,6 +67,8 @@ module.exports = {
                         resolve(body.airports[0]);
                     }
                 } else {
+                    console.log("ERROR -> "+error);
+                    console.log("status-code -> "+response.statusCode);
                     reject(new Error(error));
                 }
             });
@@ -70,7 +81,7 @@ module.exports = {
                 "origin": origin,
                 "departure_date": leavingDate,
                 "max_price": budget,
-                "apikey": API_KEY,
+                "apikey": getApiKey(),
                 "duration": duration,
             },
             "method": "GET",
@@ -94,7 +105,7 @@ module.exports = {
                 "origin": origin,
                 "departure_date": leavingDate,
                 "max_price": budget,
-                "apikey": API_KEY,
+                "apikey": getApiKey(),
                 "destination": destination,
                 "duration": duration,
             },
@@ -141,7 +152,7 @@ module.exports = {
             "url": AIRPORTS_BASE + "autocomplete",
             "qs": {
                 "term": text,
-                "apikey": API_KEY
+                "apikey": getApiKey()
             },
             "method": "GET"
         };

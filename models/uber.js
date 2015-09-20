@@ -109,10 +109,11 @@ module.exports = {
                         low += temp['low_estimate'] * 1/surge;
                         high += temp['high_estimate'] * 1/surge;
                         num++;
+
+                        // pass that price back
+                        resolve((low + high)/num); // Calculate the average price over all uberX's with no surge and return
                     }
 
-                    // pass that price back
-                    resolve((low + high)/num); // Calculate the average price over all uberX's with no surge and return
                 }
             }, function (reason) {
                 reject(reason);

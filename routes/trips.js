@@ -47,14 +47,14 @@ router.post('/buildTripList', function(req, res) {
 
         var duration = moment(body.returnDate).diff(moment(body.departEndDate), "days") + "--" + moment(body.returnDate).diff(moment(body.departStartDate), "days");
 
-        promise = aFlights.extensiveSearch(budget, body.destLoc, body.departLoc, body.departDate, duration);
+        promise = aFlights.extensiveSearch(budget, body.departLoc, body.destLoc, body.departDate, duration);
     }
 
     promise = promise.then(function(flightsData) {
 
         // filter the flights by price and stuff
         var out = _.filter(flightsData.results, {return_date: body.returnDate});
-        out = _.slice(out, 0, 2);
+        out = _.slice(out, 0, 5);
         out = _.map(out, function(flight) {
             flight.origin = flightsData.origin;
             flight.price = parseFloat(flight.price);

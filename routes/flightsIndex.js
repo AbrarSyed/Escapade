@@ -7,7 +7,7 @@ var flights = require('../models/amadeusFlights.js');
 
 router.get('/airportAutoComplete', function(request, response, next) {
     flights.autoComplete(request.query.text).then(function (body) {
-        response.send(body);
+        response.json(body);
     }, function (reason) {
         response.send(reason);
     });

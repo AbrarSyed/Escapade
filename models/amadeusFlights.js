@@ -119,16 +119,12 @@ function airportAutoComplete(text) {
     return new Promise(function (resolve, reject) {
         request(option, function(error, response, body) {
             if (!error && response.statusCode == 200) {
-                resolve(body);
+                resolve(JSON.parse(body));
             } else {
                 reject(error);
             }
         });
     });
-}
-
-function setupEndpoints() {
-
 }
 
 

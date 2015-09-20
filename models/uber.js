@@ -22,6 +22,7 @@ function makeOptions(url)
         }
     };
 }
+
 var endpoint = 'https://api.uber.com/';
 
 function callUberAPI(url)
@@ -120,8 +121,6 @@ function estimateTimes(startCoord)
  * @param startCoord.latitude {float} latitude of the starting coordinate
  * @returns { "estimate": int (seconds), "type": "uberX" }
  */
-
-
 
 module.exports = {
     "estimateTimes": estimateTimes,

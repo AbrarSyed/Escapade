@@ -12,13 +12,6 @@ router.get("/uberXtime", function(request, response, next) {
         latitude: request.query.latitude
     };
 
-    // Hard code to test
-    //var params = {}
-    //params.startCoord = {
-    //    "longitude": -71.101857,
-    //    "latitude": 42.36508
-    //};
-
     uber.estimateTimes(params).then(function (estimate) {
         response.send({
             "estimate": estimate,

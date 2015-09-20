@@ -15,8 +15,7 @@ router.post('/buildTripList', function(req, res) {
     if (
             !body ||
             !body.departLoc ||
-            !body.departStartDate ||
-            !body.departEndDate ||
+            !body.departDate ||
             !body.returnDate ||
             !body.budget
     )
@@ -26,6 +25,10 @@ router.post('/buildTripList', function(req, res) {
     }
 
     var budget = body.budget;
+
+    body.departStartDate = departDate.split("--")[0];
+    body.departEndDate = departDate.split("--")[1];
+
     var promise;
 
     // Obtain Raw Flights
@@ -33,34 +36,20 @@ router.post('/buildTripList', function(req, res) {
     {
         // no destination? wel do inspiration
 
-        // build depart range
-        var depDate = body.departStartDate;
-        if (body.departStartDate != body.departEndDate)
-        {
-            depDate += "--"+body.departEndDate;
-        }
-
         var duration = moment(body.returnDate).diff(moment(body.departEndDate), "days") + "--" + moment(body.returnDate).diff(moment(body.departStartDate), "days");
 
-        promise = aFlights.inspirationSearch(budget, body.departLoc, depDate, duration);
+        promise = aFlights.inspirationSearch(budget, body.departLoc, departDate, duration);
     }
     else
     {
         // do extensive
 
-        // build depart range
-        var depDate = body.departStartDate;
-        if (body.departStartDate != body.departEndDate)
-        {
-            depDate += "--"+body.departEndDate;
-        }
-
         var duration = moment(body.returnDate).diff(moment(body.departEndDate), "days") + "--" + moment(body.returnDate).diff(moment(body.departStartDate), "days");
 
-        promise = aFlights.extensiveSearch(budget, body.destLoc, body.departLoc, depDate, duration);
+        promise = aFlights.extensiveSearch(budget, body.destLoc, body.departLoc, departDate, duration);
     }
 
-    var flightPromise = promise.then(function(flightsData) {
+    promise = promise.then(function(flightsData) {
 
         // filter the flights by price and stuff
         var out = _.filter(flightsData.results, {return_date: body.returnDate});
@@ -74,7 +63,7 @@ router.post('/buildTripList', function(req, res) {
         return out;
     });
 
-    var airportPromise = flightPromise.then(function(flights) {
+    promise = promise.then(function(flights) {
         // add the airport data to each flight
         // construct list of promises
         var promises = _.map(flights, function(flight) {
@@ -91,7 +80,8 @@ router.post('/buildTripList', function(req, res) {
         throw new Error(err);
     });
 
-    var airportAndUberPromises = airportPromise.then(function(flights) {
+    promise = promise.then(function(flights) {
+
         // get aggregate of hotel data
         var promises = _.map(flights, function(flight) {
 
@@ -160,22 +150,20 @@ router.post('/buildTripList', function(req, res) {
             return hotelPromise;
         });
 
-        //promises[0].catch(function(err) {
-        //   console.log("WERRRORRRR -> "+err);
-        //});
-        //
-        //promises[1].then(function(thing) {
-        //    console.log("HUHUH!!!")
-        //}, function(err) {
-        //    console.log("WHAT!?!?! -> "+err);
-        //    throw new Error(err);
-        //});
+        promises[0].catch(function(err) {
+           console.log("WERRRORRRR -> "+err);
+        });
 
-         //add flights and hotels to make
+        promises[1].then(function(thing) {
+            console.log("HUHUH!!!")
+        }, function(err) {
+            console.log("WHAT!?!?! -> "+err);
+            throw new Error(err);
+        });
+
+        // add flights and hotels to make
         return Promise.all(promises).then(function(thing) {
             console.log("HUHUH!!!")
-            console.log(thing);
-            return thing;
         }, function(err) {
             console.log("WHAT!?!?! -> "+err);
             throw new Error(err);
@@ -185,17 +173,10 @@ router.post('/buildTripList', function(req, res) {
         throw new Error(err);
     });
 
-    var finalTrips = airportAndUberPromises.then(function(trips) {
+    promise = promise.then(function(trips) {
         console.log("TRIPS  ------------ ");
         console.log(JSON.stringify(trips));
         console.log("------------");
-
-        for (var i = 0; i < trips.length; i++)
-        {
-            if (trips[i].length == 0) {
-                trips.splice(i, 1)
-            }
-        }
         res.json(trips);
     }, function(err) {
         console.log("WHAT!?!?! -> "+err);

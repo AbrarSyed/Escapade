@@ -13,7 +13,7 @@ router.get("/uberXtime", function(request, response, next) {
     };
 
     uber.estimateTimes(params).then(function (estimate) {
-        response.send({
+        response.json({
             "estimate": estimate,
             "type": "uberX",
         });
@@ -33,7 +33,7 @@ router.get("/uberXPrice", function(request, response, next) {
 
 
     uber.estimatePrices(startCoord, endCoord).then(function (data) {
-        response.send({
+        response.json({
             "price": data,
             "type": "uberX"
         });

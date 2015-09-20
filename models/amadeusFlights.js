@@ -25,7 +25,7 @@ function inspirationSearch(budget, origin, leavingDate)
     return new Promise(function (resolve, reject) {
         request(option, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                resolve(body);
+                resolve(JSON.parse(body));
             } else {
                 reject(error);
             }
@@ -50,7 +50,7 @@ function extensiveSearch(budget, origin, destination, leavingDate)
     return new Promise(function (resolve, reject) {
         request(option, function(error, response, body) {
             if (!error && response.statusCode == 200) {
-                resolve(body);
+                resolve(JSON.parse(body));
             } else {
                 reject(error);
             }
@@ -75,7 +75,7 @@ function lowFareSearch(budget, origin, destination, leavingDate)
     return new Promise(function (resolve, reject) {
         request(option, function(error, response, body) {
             if (!error && response.statusCode == 200) {
-                resolve(body);
+                resolve(JSON.parse(body));
             } else {
                 reject(error);
             }
@@ -98,7 +98,7 @@ function nearbyAirport(coordinate)
     return new Promise(function (resolve, reject) {
         request(option, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                resolve(body);
+                resolve(JSON.parse(body));
             } else {
                 reject(error);
             }

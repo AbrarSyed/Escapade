@@ -60,7 +60,7 @@ router.post('/buildTripList', function(req, res) {
         promise = aFlights.extensiveSearch(budget, body.destLoc, body.departLoc, depDate, duration);
     }
 
-    promise = promise.then(function(flightsData) {
+    var flightPromise = promise.then(function(flightsData) {
 
         // filter the flights by price and stuff
         var out = _.filter(flightsData.results, {return_date: body.returnDate});
@@ -74,7 +74,7 @@ router.post('/buildTripList', function(req, res) {
         return out;
     });
 
-    promise = promise.then(function(flights) {
+    var airportPromise = flightPromise.then(function(flights) {
         // add the airport data to each flight
         // construct list of promises
         var promises = _.map(flights, function(flight) {
@@ -91,8 +91,7 @@ router.post('/buildTripList', function(req, res) {
         throw new Error(err);
     });
 
-    promise = promise.then(function(flights) {
-
+    var airportAndUberPromises = airportPromise.then(function(flights) {
         // get aggregate of hotel data
         var promises = _.map(flights, function(flight) {
 
@@ -161,20 +160,22 @@ router.post('/buildTripList', function(req, res) {
             return hotelPromise;
         });
 
-        promises[0].catch(function(err) {
-           console.log("WERRRORRRR -> "+err);
-        });
+        //promises[0].catch(function(err) {
+        //   console.log("WERRRORRRR -> "+err);
+        //});
+        //
+        //promises[1].then(function(thing) {
+        //    console.log("HUHUH!!!")
+        //}, function(err) {
+        //    console.log("WHAT!?!?! -> "+err);
+        //    throw new Error(err);
+        //});
 
-        promises[1].then(function(thing) {
-            console.log("HUHUH!!!")
-        }, function(err) {
-            console.log("WHAT!?!?! -> "+err);
-            throw new Error(err);
-        });
-
-        // add flights and hotels to make
+         //add flights and hotels to make
         return Promise.all(promises).then(function(thing) {
             console.log("HUHUH!!!")
+            console.log(thing);
+            return thing;
         }, function(err) {
             console.log("WHAT!?!?! -> "+err);
             throw new Error(err);
@@ -184,10 +185,17 @@ router.post('/buildTripList', function(req, res) {
         throw new Error(err);
     });
 
-    promise = promise.then(function(trips) {
+    var finalTrips = airportAndUberPromises.then(function(trips) {
         console.log("TRIPS  ------------ ");
         console.log(JSON.stringify(trips));
         console.log("------------");
+
+        for (var i = 0; i < trips.length; i++)
+        {
+            if (trips[i].length == 0) {
+                trips.splice(i, 1)
+            }
+        }
         res.json(trips);
     }, function(err) {
         console.log("WHAT!?!?! -> "+err);

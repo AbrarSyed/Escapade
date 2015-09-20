@@ -94,27 +94,25 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             callUberAPI(url).then(function (data) {
                 var ret = JSON.parse(data);
-                var low = 0.0;
-                var high = 0.0;
-                var num = 0;
-                var filter = "uberx";
+                var cheapest = 99999.99;
 
                 // find the average price of all uberx's
                 for (var idx = 0; idx < ret['prices'].length; idx++) {
 
                     var temp = ret['prices'][idx];
-                    if (temp['display_name'].toLowerCase() === filter) {
-                        var surge = temp['surge_multiplier'];
 
-                        low += temp['low_estimate'] * 1/surge;
-                        high += temp['high_estimate'] * 1/surge;
-                        num++;
+                    var surge = temp['surge_multiplier'];
 
-                        // pass that price back
-                        resolve((low + high)/num); // Calculate the average price over all uberX's with no surge and return
+                    var cheapTemp = temp['low_estimate'] * 1/surge;
+                    cheapTemp += temp['high_estimate'] * 1/surge;
+                    cheapTemp /= 2;
+
+                    if (cheapTemp < cheapest) {
+                        cheapest = cheapTemp;
                     }
-
                 }
+
+                resolve(cheapest); // Calculate the average price over all uberX's with no surge and return
             }, function (reason) {
                 reject(reason);
             });
